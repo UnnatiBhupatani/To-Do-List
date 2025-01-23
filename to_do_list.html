@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script>
+      let taskList = [
+        { text: "meeting", completed: false },
+        { text: "task_calculator", completed: false },
+        { text: "rent payment", completed: false },
+        { text: "Learn js", completed: false },
+      ];
+      let editIndex = null;
+      document.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const taskInput = document.getElementById("task");
+        const task = taskInput.value.trim();
+
+        if (task === "") {
+          alert("Please enter a task");
+          return;
+        }
+
+        if (editIndex !== null) {
+          taskList[editIndex].text = task;
+          editIndex = null;
+          document.getElementById("submitButton").textContent = "Submit";
+        } else {
+          taskList.push({ text: task, completed: false });
+        }
+
+        taskInput.value = "";
+        fetchTasks();
+      });
+
+      function fetchTasks() {
+        const taskListDisplay = document.getElementById("task-list");
+        taskListDisplay.innerHTML = "";
+
+        taskList.forEach((task, index) => {
+          const li = document.createElement("li");
+          li.className = "list-group-item";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = task.completed;
+          checkbox.className = "form-check-input me-1";
+          checkbox.onchange = () => toggleComplete(index);
+
+          const span = document.createElement("span");
+          span.textContent = task.text;
+          span.style = "margin-right:100px;";
+          span.className = "form-check-label fw-bold";
+          span.className = task.completed ? "completed" : "";
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.type = "button";
+          editButton.style = "margin-left:50px;";
+          editButton.className =
+            "btn btn-warning  btn-sm mx-2 badge text-bg-primary rounded-pills";
+          editButton.onclick = () => loadTaskForEditing(index);
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          // deleteButton.style="margin-right:70px;";
+          deleteButton.className =
+            "btn btn-danger btn-sm badge text-bg-primary rounded-pill  ";
+          deleteButton.onclick = () => deleteTask(index);
+
+          li.appendChild(checkbox);
+          li.appendChild(span);
+          li.appendChild(editButton);
+          li.appendChild(deleteButton);
+
+          taskListDisplay.appendChild(li);
+        });
+        totalCount();
+      }
+      function totalCount() {
+        const totalTask = taskList.length;
+        const totalComplete = taskList.filter((task) => task.completed).length;
+        const totalPending = taskList.length - totalComplete;
+
+        document.getElementById("totalTask").textContent = totalTask;
+        document.getElementById("totalCompleted").textContent = totalComplete;
+        document.getElementById("totalPending").textContent = totalPending;
+      }
+
+      function toggleComplete(index) {
+        taskList[index].completed = !taskList[index].completed;
+        fetchTasks();
+      }
+
+      function loadTaskForEditing(index) {
+        const taskInput = document.getElementById("task");
+        taskInput.value = taskList[index].text;
+        editIndex = index;
+        document.getElementById("submitButton").textContent = "Update";
+      }
+
+      function deleteTask(index) {
+        taskList.splice(index, 1);
+        fetchTasks();
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchTasks);
+    </script>
+  </head>
+  <body>
+    <div
+      class="container border shadow-lg p-4"
+      style="width: 30%; margin-top: 50px"
+    >
+      <h3 class="text-center mb-4">To Do List</h3>
+      <form method="post" action="" id="form">
+        <input
+          type="text"
+          id="task"
+          placeholder="Enter task"
+          class="form-control mb-3"
+        />
+        <button type="submit" id="submitButton" class="btn btn-info w-100 mb-3">
+          Submit
+        </button>
+        <h5>Task List</h5>
+        <ul id="task-list" class="list-group"></ul>
+        <br /><br />
+        <h4>Count:</h4>
+
+        <ul class="list-group">
+          <li class="list-group-item">
+            Total tasks:
+            <span
+              id="totalTask"
+              style="margin-left: 350px"
+              class="fw-bold bg-primary p-2 rounded text-light"
+            ></span>
+          </li>
+          <li class="list-group-item">
+            Total completed tasks:
+            <span
+              id="totalCompleted"
+              style="margin-left: 270px"
+              class="fw-bold bg-primary p-2 rounded text-light"
+            ></span>
+          </li>
+          <li class="list-group-item">
+            Total pending tasks:
+            <span
+              id="totalPending"
+              style="margin-left: 288px"
+              class="fw-bold bg-primary p-2 rounded text-light"
+            ></span>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </body>
+</html>
