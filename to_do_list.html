@@ -51,59 +51,68 @@
       });
 
       function fetchTasks() {
-        const taskListDisplay = document.getElementById("task-list");
-        taskListDisplay.innerHTML = "";
+  const taskListDisplay = document.getElementById("task-list");
+  taskListDisplay.innerHTML = "";
 
-        taskList.forEach((task, index) => {
-          const li = document.createElement("li");
-          li.className = "list-group-item d-flex  align-items-start";
+  taskList.forEach((task, index) => {
+    const li = document.createElement("li");
+    li.className = "list-group-item";
 
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = task.completed;
-          checkbox.className = "form-check-input ";
-          checkbox.onchange = () => toggleComplete(index);
+    // Create a container for the task details and buttons
+    const taskContainer = document.createElement("div");
+    taskContainer.className = "d-flex justify-content-between align-items-center";
 
-          const span = document.createElement("span");
-          span.textContent = task.text;
-          span.style = "font-weight:bold;";
-          span.className = "form-check-label fw-bold ms-2 ";
-          span.className = task.completed ? "completed" : "";
+    // Checkbox for marking task as complete
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.completed;
+    checkbox.className = "form-check-input me-2";
+    checkbox.onchange = () => toggleComplete(index);
 
-          const div=document.createElement("div");
-          div.className="ms-2 me-auto"
+    // Task text
+    const span = document.createElement("span");
+    span.textContent = task.text;
+    span.className = `fw-bold ${task.completed ? "text-decoration-line-through" : ""}`;
 
-          const spanCategory = document.createElement("span");
-          spanCategory.textContent = task.Category;
-          spanCategory.style = "margin-left:0px;";
-          spanCategory.className = " p-1 mb-1  text-dark rounded ";
+    // Buttons container for "Edit" and "Delete"
+    const buttonContainer = document.createElement("div");
 
-          const editButton = document.createElement("button");
-          editButton.textContent = "Edit";
-          editButton.type = "button";
-          editButton.style = "";
-          editButton.className ="btn btn-warning  btn-sm mx-2   rounded-pill  ";
-          editButton.onclick = () => loadTaskForEditing(index);
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.type = "button";
+    editButton.className = "btn btn-warning btn-sm mx-1 rounded-pill";
+    editButton.onclick = () => loadTaskForEditing(index);
 
-          const deleteButton = document.createElement("button");
-          deleteButton.textContent = "Delete";
-          deleteButton.className ="btn btn-danger btn-sm  rounded-pill";
-          deleteButton.onclick = () => deleteTask(index);
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.className = "btn btn-danger btn-sm mx-1 rounded-pill";
+    deleteButton.onclick = () => deleteTask(index);
 
-          li.appendChild(checkbox);
-          li.appendChild(span);
-          li.appendChild(div);
-          li.appendChild(editButton);
-          li.appendChild(deleteButton);
-         
-           li.appendChild(spanCategory);
-           
-          
-          taskListDisplay.appendChild(li);
-         //taskListDisplay.appendChild(li2);
-        });
-        totalCount();
-      }
+    // Add buttons to the button container
+    buttonContainer.appendChild(editButton);
+    buttonContainer.appendChild(deleteButton);
+
+    // Add checkbox, task text, and button container to the task container
+    taskContainer.appendChild(checkbox);
+    taskContainer.appendChild(span);
+    taskContainer.appendChild(buttonContainer);
+
+    // Add category info below the task details
+    const categoryDiv = document.createElement("div");
+    categoryDiv.textContent = `Category: ${task.Category}`;
+    categoryDiv.className = "mt-2 text-muted";
+
+    // Append task container and category div to the list item
+    li.appendChild(taskContainer);
+    li.appendChild(categoryDiv);
+
+    // Add the list item to the task list display
+    taskListDisplay.appendChild(li);
+  });
+  totalCount();
+}
+
+
       function totalCount() {
         const totalTask = taskList.length;
         const totalComplete = taskList.filter((task) => task.completed).length;
