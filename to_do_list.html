@@ -12,32 +12,40 @@
     />
     <script>
       let taskList = [
-        { text: "meeting", completed: false },
-        { text: "task_calculator", completed: false },
-        { text: "rent payment", completed: false },
-        { text: "Learn js", completed: false },
+        { text: "meeting", completed: false, Category: "High" },
+        { text: "task_calculator", completed: false, Category: "Medium" },
+        { text: "rent payment", completed: false, Category: "Low" },
+        { text: "Learn js", completed: false, Category: "High" },
       ];
       let editIndex = null;
+
       document.addEventListener("submit", function (e) {
         e.preventDefault();
+        const CategoryInput = document.getElementById("category");
+        let taskInput = document.getElementById("task");
+        let task = taskInput.value.trim();
 
-        const taskInput = document.getElementById("task");
-        const task = taskInput.value.trim();
+        const Category = CategoryInput.value.trim();
 
         if (task === "") {
           alert("Please enter a task");
+          return;
+        } else if (Category === "select Category") {
+          alert("please enter category");
           return;
         }
 
         if (editIndex !== null) {
           taskList[editIndex].text = task;
+          taskList[editIndex].Category = Category;
           editIndex = null;
           document.getElementById("submitButton").textContent = "Submit";
         } else {
-          taskList.push({ text: task, completed: false });
+          taskList.push({ text: task, completed: false, Category: Category });
         }
 
         taskInput.value = "";
+        CategoryInput.value = "select Category";
         fetchTasks();
       });
 
@@ -48,6 +56,10 @@
         taskList.forEach((task, index) => {
           const li = document.createElement("li");
           li.className = "list-group-item";
+
+          const li2 = document.createElement("li");
+          li2.className = "list-group-item";
+
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = task.completed;
@@ -56,31 +68,39 @@
 
           const span = document.createElement("span");
           span.textContent = task.text;
-          span.style = "margin-right:100px;";
-          span.className = "form-check-label fw-bold";
+          span.style = "margin-right:100px; font-weight:bold; font-size:20px;";
+          span.className = "form-check-label ";
           span.className = task.completed ? "completed" : "";
+
+          const spanCategory = document.createElement("span");
+          spanCategory.textContent = task.Category;
+          spanCategory.style = "margin-left:10px;";
+
+          spanCategory.className = " p-1 bg-secondary text-light rounded";
 
           const editButton = document.createElement("button");
           editButton.textContent = "Edit";
           editButton.type = "button";
           editButton.style = "margin-left:50px;";
           editButton.className =
-            "btn btn-warning  btn-sm mx-2 badge text-bg-primary rounded-pills";
+            "btn btn-warning  btn-sm mx-2  text-bg-primary rounded-pill";
           editButton.onclick = () => loadTaskForEditing(index);
 
           const deleteButton = document.createElement("button");
           deleteButton.textContent = "Delete";
           // deleteButton.style="margin-right:70px;";
           deleteButton.className =
-            "btn btn-danger btn-sm badge text-bg-primary rounded-pill  ";
+            "btn btn-danger btn-sm  text-bg-primary rounded-pill  ";
           deleteButton.onclick = () => deleteTask(index);
 
           li.appendChild(checkbox);
           li.appendChild(span);
-          li.appendChild(editButton);
-          li.appendChild(deleteButton);
+          li2.appendChild(editButton);
+          li2.appendChild(deleteButton);
+          li2.appendChild(spanCategory);
 
           taskListDisplay.appendChild(li);
+          taskListDisplay.appendChild(li2);
         });
         totalCount();
       }
@@ -88,10 +108,22 @@
         const totalTask = taskList.length;
         const totalComplete = taskList.filter((task) => task.completed).length;
         const totalPending = taskList.length - totalComplete;
+        const totalHigh = taskList.filter(
+          (task) => task.Category == "High"
+        ).length;
+        const totalMedium = taskList.filter(
+          (task) => task.Category == "Medium"
+        ).length;
+        const totalLow = taskList.filter(
+          (task) => task.Category == "Low"
+        ).length;
 
         document.getElementById("totalTask").textContent = totalTask;
         document.getElementById("totalCompleted").textContent = totalComplete;
         document.getElementById("totalPending").textContent = totalPending;
+        document.getElementById("totalHigh").textContent = totalHigh;
+        document.getElementById("totalMedium").textContent = totalMedium;
+        document.getElementById("totalLow").textContent = totalLow;
       }
 
       function toggleComplete(index) {
@@ -101,7 +133,9 @@
 
       function loadTaskForEditing(index) {
         const taskInput = document.getElementById("task");
+        const Category = document.getElementById("category");
         taskInput.value = taskList[index].text;
+        Category.value = taskList[index].Category;
         editIndex = index;
         document.getElementById("submitButton").textContent = "Update";
       }
@@ -126,7 +160,19 @@
           id="task"
           placeholder="Enter task"
           class="form-control mb-3"
-        />
+        /><br />
+
+        <select
+          class="form-select"
+          id="category"
+          aria-label="Default select example"
+        >
+          <option selected>select Category</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option></select
+        ><br />
+
         <button type="submit" id="submitButton" class="btn btn-info w-100 mb-3">
           Submit
         </button>
@@ -157,6 +203,38 @@
             <span
               id="totalPending"
               style="margin-left: 288px"
+              class="fw-bold bg-primary p-2 rounded text-light"
+            ></span>
+          </li>
+
+          <li class="list-group-item fw-bold">
+            Category Count:
+            <span style="margin-left: 288px"></span>
+          </li>
+
+          <li class="list-group-item">
+            Total High:
+            <span
+              id="totalHigh"
+              style="margin-left: 353px"
+              class="fw-bold bg-primary p-2 rounded text-light"
+            ></span>
+          </li>
+
+          <li class="list-group-item">
+            Total Medium:
+            <span
+              id="totalMedium"
+              style="margin-left: 327px"
+              class="fw-bold bg-primary p-2 rounded text-light"
+            ></span>
+          </li>
+
+          <li class="list-group-item">
+            Total Low:
+            <span
+              id="totalLow"
+              style="margin-left: 357px"
               class="fw-bold bg-primary p-2 rounded text-light"
             ></span>
           </li>
